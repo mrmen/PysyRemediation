@@ -82,7 +82,7 @@ class Remediation():
     notion       : nombre de notions
     Il faudra compiler le fichier avec LaTeX pour obtenir un PDF.
     '''
-    def __init__(self, filename = "", competence="comp.csv", output = "output.tex"):
+    def __init__(self, filename = "fichier.csv", competence="comp.csv", output = "output.tex"):
         '''__init__
         Initialisation et génération du fichier de sortie.
         '''
@@ -125,9 +125,11 @@ class Remediation():
         file = open(self.competence,"r")
         self.Competences = []
         self.Observables = []
+        self.exerciseNames = []
         for line in file.readlines():# pour chaque ligne du fichier
                 temp = line.replace("\n","").split(";")# ajouter la ligne du fichier
                 self.Competences.append(temp[0])
+                self.exerciseNames.append(temp[0])
                 self.Observables.append(temp[1:])
         file.close()
         self.notions = len(self.Competences) # nombre de notions
@@ -159,8 +161,9 @@ class Remediation():
         self.Exercises = [[] for _ in range(self.notions)]
         for _ in os.listdir("./ex"):
             name = _.split("-")
-            if "notion" in name:
-                self.Exercises[int(name[1])-1].append(_)
+            #self.Exercises[int(name[1])-1].append(_)
+#             if "notion" in name:
+#                 self.Exercises[int(name[1])-1].append(_)
     
     def generateTex(self):
         '''generateTex
@@ -217,7 +220,8 @@ class Remediation():
                                         # utilisation de notion
                 lvl = int(self.content[index][notion+1])+1# niveau d'exercice pour la
                                         # notion et l'élève
-                string += "\\begin{minipage}{0.5\linewidth}\centering\\includegraphics[width=8cm]{"+'./ex/notion-'+str(notion+1)+"-"+str(lvl)+".png}\\end{minipage}"
+#                 string += "\\begin{minipage}{0.5\linewidth}\centering\\includegraphics[width=8cm]{"+'./ex/notion-'+str(notion+1)+"-"+str(lvl)+".png}\\end{minipage}"
+                string += "\\begin{minipage}{0.5\linewidth}\centering\\includegraphics[width=8cm]{"+'./ex/'+self.exerciseNames[i]+"-"+str(lvl)+".png}\\end{minipage}"
                 minipage += 1
                 if (minipage%2 == 0):# si deux minipage face à face
                         string +="\n\n"# on saute deux lignes
@@ -247,5 +251,5 @@ class Remediation():
                 
 
 if __name__=="__main__":
-    converter = Remediation("eleves.csv", "competences.csv","remediation.tex")
+    converter = Remediation("fichier.csv", "comp.csv","remediation.tex")
 #        app = Fenetre()
