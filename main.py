@@ -2,76 +2,7 @@
 # -*- coding:utf-8 -*-
 #from docx import Document
 #from docx.shared import Cm
-import os, sys
-
-if sys.version_info[0]==2:
-    import Tkinter as tk
-    from Tkinter import filedialog
-    from Tkinter import *
-else:
-    import tkinter as tk
-    from tkinter import filedialog
-    from tkinter import *
-
-
-#TODO: - support de docx
-#TODO: - possibilité de changer le dossier ex
-#TODO: - changement du nombre de notions
-
-class Fenetre():
-        def __init__(self):
-                self.filename = None
-                self.output = None
-                self.fenetre = tk.Tk()
-                self.fenetre.title("Outils de remédiation")
-                self.filename_entry = tk.Entry(self.fenetre)
-                self.output_entry = tk.Entry(self.fenetre)
-                self.filename_button = tk.Button(self.fenetre, text = "Sélectionner le fichier source", command = self.get_filename)
-                self.output_button = tk.Button(self.fenetre, text = "Sélectionner le fichier de sortie", command = self.get_output)
-                self.notions = tk.Entry(self.fenetre)
-                self.label_notions = tk.Label(self.fenetre, text = "Nombre de notions")
-                self.send_button = tk.Button(self.fenetre, text = "Créer les feuilles...", command = self.send)
-                self.place_widgets()
-                self.__mainloop__()
-                
-        def place_widgets(self):
-                self.filename_entry.grid(row=1,column=0,columnspan=2)
-                self.filename_button.grid(row=1,column=3,columnspan=1)
-                self.output_entry.grid(row=2,column=0,columnspan=2)
-                self.output_button.grid(row=2,column=3,columnspan=1)
-                self.send_button.grid(row=4, column=0,columnspan = 4,sticky=EW)
-                self.notions.insert(0,"4")                
-                self.notions.grid(row = 3, column=0,columnspan=2)
-                self.label_notions.grid(row = 3, column=3, columnspan=2)
-                
-        def get_filename(self):
-                self.filename = tk.filedialog.askopenfilename()
-                self.filename_entry.insert(0,self.filename)
-    
-        def get_output(self):
-                self.output = tk.filedialog.asksaveasfilename()
-                self.output_entry.insert(0,self.output)
-
-        def send(self):
-                if self.filename and self.output:
-                        converter = Remediation(self.filename, "comp.csv",self.output)
-                else:
-                        top = tk.Toplevel()
-                        top.title("Erreur sur les noms de fichiers.")
-                        tk.Message(top, text = "L'un des noms de fichiers n'a pas été renseigné…").pack()
-                        tk.Button(top, text = "Ok", command = top.destroy).pack()
-                        top.width=600
-                
-        def __mainloop__(self):
-                self.fenetre.lift()
-                self.fenetre.attributes("-topmost", True)
-                self.fenetre.mainloop()
-                
-                
-######
-###
-######
-
+import os, sys, codecs
 
 class Remediation():
     '''Classe qui permet de produire le fichier de remédiation.
@@ -108,7 +39,7 @@ class Remediation():
         Transfert du fichier dans la liste self.content
         '''
         # Chargement du fichier dans Python
-        file = open(self.filename,"r") # ouverture du fichier
+        file = codecs.open(self.filename,"r","utf-8") # ouverture du fichier
         self.content = []
         for line in file.readlines():# pour chaque ligne du fichier
             self.content.append(line.replace("\n","").split(";"))# ajouter la ligne du fichier
@@ -122,15 +53,16 @@ class Remediation():
         Transfert de la liste des compétences dans la liste self.Competences
         Transfert de la liste des observables dans la liste 2D self.Observables
         '''
-        file = open(self.competence,"r")
+        file = codecs.open(self.competence,"r","utf-8")
         self.Competences = []
         self.Observables = []
         self.exerciseNames = []
         for line in file.readlines():# pour chaque ligne du fichier
                 temp = line.replace("\n","").split(";")# ajouter la ligne du fichier
                 self.Competences.append(temp[0])
-                self.exerciseNames.append(temp[0])
+                self.exerciseNames.append(temp[0].replace("é","e"))
                 self.Observables.append(temp[1:])
+        print(self.exerciseNames)
         file.close()
         self.notions = len(self.Competences) # nombre de notions
 
@@ -171,7 +103,7 @@ class Remediation():
         Répétition sur le nombre d'élèves pour produire une page personnalisée.
         '''
         string = '''
-\\documentclass[french,12pt]{article} 
+\\documentclass[french,10pt]{article} 
 \\usepackage{ifluatex} 
 \\ifluatex 
 \\usepackage{fontspec} 
@@ -203,10 +135,10 @@ class Remediation():
                                         # d'élèves
                                         # utilisation de index
 ###
-            positionnement = ["\\cellcolor{red!25} & & &","& \\cellcolor{yellow!25} & &", "& & \\cellcolor{green!25} &", "& & & \\cellcolor{DarkGreen!25}"]
+            positionnement = ["\\cellcolor{red!25}\\checkmark & & &","& \\cellcolor{yellow!25}\\checkmark & &", "& & \\cellcolor{green!25}\\checkmark &", "& & & \\cellcolor{DarkGreen!25}\\checkmark"]
             endofminipage = 0
             for i in range(self.notions):
-                string += "\\begin{center}\n\\begin{tabular}{|*{5}{p{2cm}|}}\n\\hline\n"
+                string += "\\begin{center}\n\\begin{tabular}{|p{3cm}|*{4}{>{\\footnotesize}p{3cm}<{}|}}\n\\hline\n"
                 string += "& "+ "&".join(self.Observables[i]) + "\\\\"
                 string += "\\hline\n"
                 string += self.Competences[i] + " & " + positionnement[int(self.content[index][i+1])] + "\\\\"
@@ -216,19 +148,18 @@ class Remediation():
             string += "\\subsection*{Remédiation pour "+self.Students[index]+"}\n"#
                                         #Titre avec le nom de l'élève
             minipage = 0# variable pour la manipulation des deux colonnes
-            for notion in range(len(self.Exercises)):# répétition sur les notions
+            for notion in range(len(self.exerciseNames)):# répétition sur les notions
                                         # utilisation de notion
                 lvl = int(self.content[index][notion+1])+1# niveau d'exercice pour la
                                         # notion et l'élève
-#                 string += "\\begin{minipage}{0.5\linewidth}\centering\\includegraphics[width=8cm]{"+'./ex/notion-'+str(notion+1)+"-"+str(lvl)+".png}\\end{minipage}"
-                string += "\\begin{minipage}{0.5\linewidth}\centering\\includegraphics[width=8cm]{"+'./ex/'+self.exerciseNames[i]+"-"+str(lvl)+".png}\\end{minipage}"
+                string += "\\begin{minipage}{0.8\linewidth}\centering\\includegraphics[width=9cm]{"+'./ex/'+self.exerciseNames[notion]+"-"+str(lvl)+".png}\\end{minipage}\\\\"
                 minipage += 1
                 if (minipage%2 == 0):# si deux minipage face à face
                         string +="\n\n"# on saute deux lignes
             string += "\\newpage"# nouvelle page pour changement d'élève
         string += "\\end{document}"# fin du document
 
-        file = open(self.output_file, "w")# ouverture du fichier sortie
+        file = codecs.open(self.output_file, "w","utf-8")# ouverture du fichier sortie
         file.write(string)# écriture de string dans le fichier de sortie
         file.close()# fermeture du fichier de sortie
 
@@ -250,6 +181,42 @@ class Remediation():
         document.save('demo.docx')                  
                 
 
+def helpMe():
+    print('''
+    Ce script attend la présence de deux fichiers :
+    - eleves.csv
+        contient les noms des élèves, puis les positionnement sur les compétences évaluées
+        le positionnement est compris entre 0 et 3
+        les différents champ sont séparés par des «;»
+        exemple :
+        nom1;0;1;2;0
+        nom2;3;3;3;3
+    - comp.csv
+        contient le noms des compétences évaluées ainsi que les observables utilisés pour
+        l'évaluation
+        le nom des compétences doit être le même que celui des exercices de dossier «ex»
+        avec les accents en plus
+    
+    et d'un dossier
+    - ex
+        contient l'ensemble des exercices au format png
+        les noms des exercices sont du types
+            competence1-1.png
+            ...
+            competence1-4.png
+        pour les 4 niveaux de maitrise
+    ''')
+        
 if __name__=="__main__":
-    converter = Remediation("fichier.csv", "comp.csv","remediation.tex")
+    if "-h" in sys.argv or "--help" in sys.argv:
+        helpMe()
+        sys.exit(0)
+    
+    for file in ["eleves.csv", "comp.csv"]:
+        if not file in os.listdir("."):
+            print("Le fichier %s est manquant. Merci de l'ajouter ou de modifier le script main.py.\n"%file)
+            input("Fin prématurée. Presser une touche.\n")
+            sys.exit(1)
+    converter = Remediation("eleves.csv", "comp.csv","remediation.tex")
+    
 #        app = Fenetre()
