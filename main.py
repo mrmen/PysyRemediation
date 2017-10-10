@@ -13,7 +13,7 @@ class Remediation():
     notion       : nombre de notions
     Il faudra compiler le fichier avec LaTeX pour obtenir un PDF.
     '''
-    def __init__(self, filename = "fichier.csv", competence="comp.csv", output = "output.tex"):
+    def __init__(self, filename = "fichier.csv", competence="comp.csv", output = "output.tex",with_solution=0):
         '''__init__
         Initialisation et génération du fichier de sortie.
         '''
@@ -21,7 +21,7 @@ class Remediation():
         self.filename = filename # nom du fichier avec les noms des élèves
         self.output_file = output # nom du fichier de sortie
         self.competence = competence # nom du fichier contenant les compétences
-
+        self.with_solution = with_solution # booléen pour l'ajout des solutions ou non
 
         self.convert_csv_to_array()
 
@@ -115,8 +115,9 @@ class Remediation():
 \\usepackage[utf8]{inputenc}
 \\usepackage[T1]{fontenc} 
 \\usepackage{kpfonts} 
-\\usepackage{amsmath, amssymb} 
-\\fi 
+\\usepackage{amsmath, amssymb}
+\\fi
+\\usepackage{rotating}
 \\usepackage{float} 
 \\usepackage[table,svgnames]{xcolor}
 \\usepackage{colortbl}
@@ -156,7 +157,24 @@ class Remediation():
                 minipage += 1
                 if (minipage%2 == 0):# si deux minipage face à face
                         string +="\n\n"# on saute deux lignes
-            string += "\\newpage"# nouvelle page pour changement d'élève
+            minipage=0
+            if self.with_solution:
+                string += "\\vfill\n\n"
+                for notion in range(len(self.exerciseNames)):# répétition sur les notions
+                    bbox = ""
+                    lvl = int(self.content[index][notion+1])+1# niveau d'exercice pour la
+                    if self.with_solution==1:
+                        current_solution = open('./solutions/'+self.exerciseNames[notion]+"-"+str(lvl),"r")
+                        for line in current_solution.readlines():
+                            bbox += line
+                        current_solution.close()
+                    elif self.with_solution==2:
+                        bbox += "\\includegraphics[width=4cm]{"+'./solutions/'+self.exerciseNames[notion]+"-"+str(lvl)+"-cor.png}\n"
+                    string += "\\begin{minipage}{0.5\\linewidth}\\begin{turn}{180}"+bbox+"\\end{turn}\\end{minipage}\n"
+                    minipage+=1
+                    if (minipage%2==0):
+                            string += "\n\n"
+            string += "\n\n\\newpage\n\n"# nouvelle page pour changement d'élève
         string += "\\end{document}"# fin du document
 
         file = codecs.open(self.output_file, "w","utf-8")# ouverture du fichier sortie
@@ -208,15 +226,29 @@ def helpMe():
     ''')
         
 if __name__=="__main__":
+    file_expected = ["eleves.csv", "comp.csv"]
+    '''with_solution : variable sur la présence de solutions
+        0 : pas de solution
+        1 : solutions dans des fichiers texte
+        2 : solutions dans des fichiers png
+        '''
+    with_solution = 0
     if "-h" in sys.argv or "--help" in sys.argv:
         helpMe()
         sys.exit(0)
-    
-    for file in ["eleves.csv", "comp.csv"]:
+    if "-s" in sys.argv or "--solution" in sys.argv:
+        file_expected.append("solutions")
+        with_solution = 1
+    for file in file_expected:
         if not file in os.listdir("."):
             print("Le fichier %s est manquant. Merci de l'ajouter ou de modifier le script main.py.\n"%file)
             input("Fin prématurée. Presser une touche.\n")
             sys.exit(1)
-    converter = Remediation("eleves.csv", "comp.csv","remediation.tex")
+    if with_solution==1:
+        sols = os.listdir("./solutions/")
+        for file in sols:
+            if "png" in file:
+                with_solution=2
+    converter = Remediation("eleves.csv", "comp.csv","remediation.tex",with_solution)
     
 #        app = Fenetre()
