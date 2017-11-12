@@ -1,7 +1,11 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
-#from docx import Document
-#from docx.shared import Cm
+
+from docx import Document
+from docx.shared import Cm
+from docx.enum.table import WD_TABLE_ALIGNMENT
+from docx.enum.text import WD_ALIGN_PARAGRAPH
+
 
 import os, sys, codecs
 
@@ -33,6 +37,7 @@ class Remediation():
         # Changement des exercices dans la liste
         self.get_exercises()
         # Géneration du fichier TeX
+        self.generateDocx()
         self.generateTex()
         
     def convert_csv_to_array(self):
@@ -46,7 +51,7 @@ class Remediation():
             self.content.append(line.replace("\n","").split(";"))# ajouter la ligne du fichier
                                         # découper selon les ;
         file.close() # fermeture du fichier
-        print(self.content)
+#        print(self.content)
 
                               
     def get_competences(self):
@@ -63,7 +68,7 @@ class Remediation():
                 self.Competences.append(temp[0])
                 self.exerciseNames.append(temp[0].replace("é","e"))
                 self.Observables.append(temp[1:])
-        print(self.exerciseNames)
+#        print(self.exerciseNames)
         file.close()
         self.notions = len(self.Competences) # nombre de notions
 
@@ -98,6 +103,49 @@ class Remediation():
 #             if "notion" in name:
 #                 self.Exercises[int(name[1])-1].append(_)
     
+    def generateDocx(self):
+        document = Document()
+        for index in range(len(self.Students)):
+            for i in range(self.notions):
+                table = document.add_table(rows=1, cols=5)
+                table.style = 'TableGrid'
+                hdr_cells = table.rows[0].cells
+                for _ in range(len(self.Observables)):
+                    hdr_cells[_+1].text = self.Observables[i][_]
+                row = table.add_row().cells
+                row[0].text = self.Competences[i]
+                p= row[int(self.content[index][i+1])+1].add_paragraph("x")
+                p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                for c in range(5):
+                    table.columns[c].width=Cm(4)
+                
+
+            p = document.add_paragraph()
+            p.add_run('Remédiation pour %s'%self.Students[index]).bold=True
+
+            minipage = 0
+            index = 0
+            for notion in range(len(self.exerciseNames)):# répétition sur les notions
+                if minipage==0:
+                    table = document.add_table(rows=1,cols=2)
+                p = table.rows[0].cells[index].add_paragraph()
+                r = p.add_run()
+                lvl = int(self.content[index][notion+1])+1# niveau d'exercice pour la
+                r.add_picture('./ex/'+self.exerciseNames[notion]+"-"+str(lvl)+".png", width=Cm(8))
+                index = (index+1)%2
+                minipage = (minipage+1)%2
+                
+            document.add_page_break()
+        #changing the page margins
+            sections = document.sections
+            for section in sections:
+                section.top_margin = Cm(1.5)
+                section.bottom_margin = Cm(1.5)
+                section.left_margin = Cm(1)
+                section.right_margin = Cm(1)
+        document.save("output.docx")
+
+
     def generateTex(self):
         '''generateTex
         Génération du fichier TeX.
@@ -154,7 +202,8 @@ class Remediation():
                                         # utilisation de notion
                 lvl = int(self.content[index][notion+1])+1# niveau d'exercice pour la
                                         # notion et l'élève
-                string += "\\begin{minipage}{0.8\linewidth}\centering\\includegraphics[width=9cm]{"+'./ex/'+self.exerciseNames[notion]+"-"+str(lvl)+".png}\\end{minipage}\\\\"
+                string += "\\begin{minipage}{0.5\linewidth}\centering\\includegraphics[width=7cm]{"+'./ex/'+self.exerciseNames[notion]+"-"+str(lvl)+".png}\\end{minipage}"#\\\\"
+                string += "\n"
                 minipage += 1
                 if (minipage%2 == 0):# si deux minipage face à face
                         string +="\n\n"# on saute deux lignes
@@ -183,21 +232,21 @@ class Remediation():
         file.close()# fermeture du fichier de sortie
 
 
-    def generateDocx(self):
-        '''generateDocx
-        À revoir : devrait permettre de créer des fichiers docx
-        '''
-        document = Document()
-        for index in range(len(self.Students)):
-            document.add_heading('Remediation pour ',0)#+self.Students[index], 0)
-            document.add_paragraph()
-            for notion in range(len(self.Exercises)):
-                document.add_heading('Notion '+str(notion+1), level=1)
-                lvl = self.content[index][notion+1]
-                document.add_picture('./ex/notion-'+str(notion+1)+"-"+str(lvl)+".gif")
-            document.add_page_break()
+    # def generateDocx(self):
+    #     '''generateDocx
+    #     À revoir : devrait permettre de créer des fichiers docx
+    #     '''
+    #     document = Document()
+    #     for index in range(len(self.Students)):
+    #         document.add_heading('Remediation pour ',0)#+self.Students[index], 0)
+    #         document.add_paragraph()
+    #         for notion in range(len(self.Exercises)):
+    #             document.add_heading('Notion '+str(notion+1), level=1)
+    #             lvl = self.content[index][notion+1]
+    #             document.add_picture('./ex/notion-'+str(notion+1)+"-"+str(lvl)+".gif")
+    #         document.add_page_break()
             
-        document.save('demo.docx')                  
+    #     document.save('demo.docx')                  
                 
 
 def helpMe():
