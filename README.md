@@ -18,7 +18,7 @@ La feuille peut ensuite être compilée au format PDF. Chaque élève aura alors
 * Python
     Une version 3 est à prioriser pour le support de l'utf-8, mais avec quelques adaptations, la version 2 peut convenir.
 
-* Pour utiliser la génération de fichier docx, il est nécessaire d'installer la librairie [python-docx](https://python-docx.readthedocs.io/en/latest/) et de supprimer les ##docx## devant chaque ligne concernées.
+* Pour utiliser la génération de fichier docx, il est nécessaire d'installer la librairie [python-docx](https://python-docx.readthedocs.io/en/latest/) et de supprimer les ##docx## devant chaque ligne concernée.
 
 
 ## Fichiers requis
