@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 
-from docx import Document
-from docx.shared import Cm
-from docx.enum.table import WD_TABLE_ALIGNMENT
-from docx.enum.text import WD_ALIGN_PARAGRAPH
+##docx##from docx import Document
+##docx##from docx.shared import Cm
+##docx##from docx.enum.table import WD_TABLE_ALIGNMENT
+##docx##from docx.enum.text import WD_ALIGN_PARAGRAPH
 
 
 import os, sys, codecs
@@ -37,7 +37,7 @@ class Remediation():
         # Changement des exercices dans la liste
         self.get_exercises()
         # Géneration du fichier TeX
-        self.generateDocx()
+##docx##        self.generateDocx()
         self.generateTex()
         
     def convert_csv_to_array(self):
