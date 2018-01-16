@@ -39,7 +39,7 @@ Un dossier doit aussi être créé ainsi que son contenu.
     
     où ? est un chiffre entre 0 et 3. Les accents doivent être absents des noms de fichiers.
 
-## Utilisation
+## Utilisation
 
 Si tous les éléments nécessaires à la réalisation de la feuille de remédiation sont présents, il suffit de lancer le script **main.py** (à l'aide d'un terminal ou en double-cliquant si cette option est disponible).
 
