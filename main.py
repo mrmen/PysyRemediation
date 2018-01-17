@@ -191,7 +191,12 @@ class Remediation():
                 string += "\\begin{center}\n\\begin{tabular}{|p{3cm}|*{4}{>{\\footnotesize}p{3cm}<{}|}}\n\\hline\n"
                 string += "& "+ "&".join(self.Observables[i]) + "\\\\"
                 string += "\\hline\n"
-                string += self.Competences[i] + " & " + positionnement[int(self.content[index][i+1])] + "\\\\"
+                if self.content[index][i+1] in [0,1,2,3]:
+                    string += self.Competences[i] + " & " + positionnement[int(self.content[index][i+1])] + "\\\\"
+                elif self.content[index][i+1] == "a":
+                    string += self.Competences[i] + " & " + " Ab. & Ab. & Ab. & Ab." + "\\\\"
+                elif self.content[index][i+1] == "n":
+                    string += self.Competences[i] + " & " + " N.E. & N.E. & N.E. & N.E." + "\\\\"
                 string += "\\hline\n"
                 string += "\\end{tabular}\\end{center}\n"
 ###            
@@ -212,7 +217,10 @@ class Remediation():
                 string += "\\vfill\n\n"
                 for notion in range(len(self.exerciseNames)):# répétition sur les notions
                     bbox = ""
-                    lvl = int(self.content[index][notion+1])+1# niveau d'exercice pour la
+                    if self.content[index][i+1] in [0,1,2,3]:
+                        lvl = int(self.content[index][notion+1])+1# niveau d'exercice pour la
+                    else:
+                        lvl = 1
                     if self.with_solution==1:
                         current_solution = open('./solutions/'+self.exerciseNames[notion]+"-"+str(lvl),"r")
                         for line in current_solution.readlines():
