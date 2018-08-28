@@ -48,12 +48,24 @@ class Remediation():
         file = codecs.open(self.filename,"r","utf-8") # ouverture du fichier
         self.content = []
         for line in file.readlines():# pour chaque ligne du fichier
-            self.content.append(line.replace("\n","").split(";"))# ajouter la ligne du fichier
-                                        # découper selon les ;
+            #TESTING
+            temp = line
+            temp = temp.replace("\n","").replace("	",";").replace("\"","")
+            temp = temp.replace("Évaluation : Maîtrise insuffisante","0")
+            temp = temp.replace("Évaluation : Maîtrise fragile","1")
+            temp = temp.replace("Évaluation : Maîtrise satisfaisante","2")
+            temp = temp.replace("Évaluation : Très bonne maîtrise ","3")
+            temp = temp.replace("Évaluation : Absent","a")
+            temp = temp.replace("Évaluation : Non évalué ","n")
+            if "X;X" in temp:
+                continue
+            if "Élève" in temp:
+                continue
+#            self.content.append(line.replace("\n","").split(";"))# ajouter la ligne du fichier découper selon les ;
+            self.content.append(temp.split(";"))
+            #TESTING
         file.close() # fermeture du fichier
-#        print(self.content)
 
-                              
     def get_competences(self):
         '''get_competences
         Transfert de la liste des compétences dans la liste self.Competences
@@ -158,7 +170,7 @@ class Remediation():
 \\usepackage{fontspec} 
 \\usepackage{unicode-math} 
 \\setmainfont{Andika New Basic} %
-\\setmainfont{Open Dyslexic} 
+\\setmainfont{Andika New Basic} 
 \\setmathfont{Tex gyre pagella math} 
 \\else 
 \\usepackage[utf8]{inputenc}
@@ -187,26 +199,44 @@ class Remediation():
 ###
             positionnement = ["\\cellcolor{red!25}\\checkmark & & &","& \\cellcolor{yellow!25}\\checkmark & &", "& & \\cellcolor{green!25}\\checkmark &", "& & & \\cellcolor{DarkGreen!25}\\checkmark"]
             endofminipage = 0
+            # valeur maximale que peut avoir l'eleve : 4 points par comp
+            maxnote = 0
+            # note de l'eleve
+            note = 0
             for i in range(self.notions):
                 string += "\\begin{center}\n\\begin{tabular}{|p{3cm}|*{4}{>{\\footnotesize}p{3cm}<{}|}}\n\\hline\n"
                 string += "& "+ "&".join(self.Observables[i]) + "\\\\"
                 string += "\\hline\n"
-                if self.content[index][i+1] in [0,1,2,3]:
+                if self.content[index][i+1] in ["0","1","2","3"]:
                     string += self.Competences[i] + " & " + positionnement[int(self.content[index][i+1])] + "\\\\"
+                    # dans ce cas l'eleve est evalue
+                    ## on prend le positionnement et on ajoute 1 (evite la note nulle)
+                    note += int(self.content[index][i+1])+1
+                    ## on ajoute 4 a la note max
+                    maxnote += 4
                 elif self.content[index][i+1] == "a":
                     string += self.Competences[i] + " & " + " Ab. & Ab. & Ab. & Ab." + "\\\\"
                 elif self.content[index][i+1] == "n":
                     string += self.Competences[i] + " & " + " N.E. & N.E. & N.E. & N.E." + "\\\\"
                 string += "\\hline\n"
                 string += "\\end{tabular}\\end{center}\n"
-###            
-            string += "\\subsection*{Remédiation pour "+self.Students[index]+"}\n"#
+###
+            # calcul de la note
+            ## on verifie que la note max n'est pas nul
+            if maxnote == 0:
+                note = "non noté"
+            else:
+                note = str(int(round(note/maxnote*20,0)))+"/20"
+            string += "\\subsection*{Remédiation pour "+self.Students[index]+" ("+note+")}\n"#
                                         #Titre avec le nom de l'élève
             minipage = 0# variable pour la manipulation des deux colonnes
             for notion in range(len(self.exerciseNames)):# répétition sur les notions
                                         # utilisation de notion
-                lvl = int(self.content[index][notion+1])+1# niveau d'exercice pour la
+                if self.content[index][notion+1] in ["0","1","2","3"]:
+                    lvl = int(self.content[index][notion+1])+1# niveau d'exercice pour la
                                         # notion et l'élève
+                else:
+                    lvl = 1
                 string += "\\begin{minipage}{0.5\linewidth}\centering\\includegraphics[width=7cm]{"+'./ex/'+self.exerciseNames[notion]+"-"+str(lvl)+".png}\\end{minipage}"#\\\\"
                 string += "\n"
                 minipage += 1
