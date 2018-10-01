@@ -45,12 +45,12 @@ class Remediation():
         Transfert du fichier dans la liste self.content
         '''
         # Chargement du fichier dans Python
-        file = codecs.open(self.filename,"r","utf-8") # ouverture du fichier
+        file = codecs.open(self.filename,"r",encoding="utf-8") # ouverture du fichier
         self.content = []
         for line in file.readlines():# pour chaque ligne du fichier
             #TESTING
             temp = line
-            temp = temp.replace("\n","").replace("	",";").replace("\"","")
+            temp = temp.replace("\n","").replace("	",";").replace("\"","").replace("\r","")
             temp = temp.replace("Évaluation : Maîtrise insuffisante","0")
             temp = temp.replace("Évaluation : Maîtrise fragile","1")
             temp = temp.replace("Évaluation : Maîtrise satisfaisante","2")
@@ -208,6 +208,11 @@ class Remediation():
                 string += "& "+ "&".join(self.Observables[i]) + "\\\\"
                 string += "\\hline\n"
                 if self.content[index][i+1] in ["0","1","2","3"]:
+            #### debug
+                    if index == 0:
+                        print(self.content[index])
+                        print(self.notions)
+            #### debug
                     string += self.Competences[i] + " & " + positionnement[int(self.content[index][i+1])] + "\\\\"
                     # dans ce cas l'eleve est evalue
                     ## on prend le positionnement et on ajoute 1 (evite la note nulle)
