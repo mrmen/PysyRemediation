@@ -238,7 +238,7 @@ class Remediation():
             if with_solution == 1:
                 string += "\\subsection*{Remédiation pour "+self.Students[index]+" ("+note+")}\n"#
             else:
-                string += "\\subsection*{Remédiation pour "+self.Students[index]+"\n"#
+                string += "\\subsection*{Remédiation pour "+self.Students[index]+"}\n"#
                                         #Titre avec le nom de l'élève
             minipage = 0# variable pour la manipulation des deux colonnes
             for notion in range(len(self.exerciseNames)):# répétition sur les notions
