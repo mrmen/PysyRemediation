@@ -18,7 +18,7 @@ class Remediation():
     notion       : nombre de notions
     Il faudra compiler le fichier avec LaTeX pour obtenir un PDF.
     '''
-    def __init__(self, filename = "fichier.csv", competence="comp.csv", output = "output.tex",with_solution=0):
+    def __init__(self, filename = "fichier.csv", competence="comp.csv", output = "output.tex",with_solution=0, with_note=0):
         '''__init__
         Initialisation et génération du fichier de sortie.
         '''
@@ -216,7 +216,10 @@ class Remediation():
                     string += self.Competences[i] + " & " + positionnement[int(self.content[index][i+1])] + "\\\\"
                     # dans ce cas l'eleve est evalue
                     ## on prend le positionnement et on ajoute 1 (evite la note nulle)
-                    note += int(self.content[index][i+1])+1
+                    if self.content[index][i+1] == 0:
+                        note += 0.5
+                    else:
+                        note += int(self.content[index][i+1])+1
                     ## on ajoute 4 a la note max
                     maxnote += 4
                 elif self.content[index][i+1] == "a":
@@ -232,7 +235,10 @@ class Remediation():
                 note = "non noté"
             else:
                 note = str(int(round(note/maxnote*20,0)))+"/20"
-            string += "\\subsection*{Remédiation pour "+self.Students[index]+" ("+note+")}\n"#
+            if with_solution == 1:
+                string += "\\subsection*{Remédiation pour "+self.Students[index]+" ("+note+")}\n"#
+            else:
+                string += "\\subsection*{Remédiation pour "+self.Students[index]+"\n"#
                                         #Titre avec le nom de l'élève
             minipage = 0# variable pour la manipulation des deux colonnes
             for notion in range(len(self.exerciseNames)):# répétition sur les notions
@@ -337,11 +343,14 @@ if __name__=="__main__":
             print("Le fichier %s est manquant. Merci de l'ajouter ou de modifier le script main.py.\n"%file)
             input("Fin prématurée. Presser une touche.\n")
             sys.exit(1)
+    with_note = 0
+    if "note" in os.listdir("."):
+        with_note = 1
     if with_solution==1:
         sols = os.listdir("./solutions/")
         for file in sols:
             if "png" in file:
                 with_solution=2
-    converter = Remediation("eleves.csv", "comp.csv","remediation.tex",with_solution)
+    converter = Remediation("eleves.csv", "comp.csv","remediation.tex",with_solution, with_note)
     
 #        app = Fenetre()
