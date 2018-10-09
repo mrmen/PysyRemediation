@@ -18,7 +18,7 @@ class Remediation():
     notion       : nombre de notions
     Il faudra compiler le fichier avec LaTeX pour obtenir un PDF.
     '''
-    def __init__(self, filename = "fichier.csv", competence="comp.csv", output = "output.tex",with_solution=0, with_note=0):
+    def __init__(self, filename = "fichier.csv", competence="comp.csv", output = "output.tex",with_solution=0, with_note):
         '''__init__
         Initialisation et génération du fichier de sortie.
         '''
@@ -27,7 +27,8 @@ class Remediation():
         self.output_file = output # nom du fichier de sortie
         self.competence = competence # nom du fichier contenant les compétences
         self.with_solution = with_solution # booléen pour l'ajout des solutions ou non
-
+        self.with_note = with_note
+        
         self.convert_csv_to_array()
 
         # Chargement des compétences
@@ -235,7 +236,7 @@ class Remediation():
                 note = "non noté"
             else:
                 note = str(int(round(note/maxnote*20,0)))+"/20"
-            if with_solution == 1:
+            if self.with_note == 1:
                 string += "\\subsection*{Remédiation pour "+self.Students[index]+" ("+note+")}\n"#
             else:
                 string += "\\subsection*{Remédiation pour "+self.Students[index]+"}\n"#
@@ -344,7 +345,8 @@ if __name__=="__main__":
             input("Fin prématurée. Presser une touche.\n")
             sys.exit(1)
     with_note = 0
-    if "note" in os.listdir("."):
+    a = str(input("Avec notes ? (0/1)"))
+    if a==str(1):
         with_note = 1
     if with_solution==1:
         sols = os.listdir("./solutions/")
