@@ -174,7 +174,7 @@ class Remediation():
 \\setmainfont{Andika New Basic} 
 \\setmathfont{Tex gyre pagella math} 
 \\else 
-\\usepackage[utf8]{inputenc}
+\\usepackage[utf8x]{inputenc}
 \\usepackage[T1]{fontenc} 
 \\usepackage{kpfonts} 
 \\usepackage{amsmath, amssymb}
