@@ -8,6 +8,10 @@
 
 
 import os, sys, codecs
+if sys.version_info[0] < 3:
+    import tkinter as tk
+else:
+    import Tkinter as tk
 
 class Remediation():
     '''Classe qui permet de produire le fichier de remédiation.
@@ -56,7 +60,7 @@ class Remediation():
         for line in file.readlines():# pour chaque ligne du fichier
             #TESTING
             temp = line
-            temp = temp.replace("\n","").replace("	",";").replace("\"","").replace("\r","")
+            temp = temp.replace("\n","").replace("	",";").replace("\"","").replace("\r","").replace("	",";")
             temp = temp.replace("Maîtrise insuffisante","0")
             temp = temp.replace("Maîtrise fragile","1")
             temp = temp.replace("Maîtrise satisfaisante","2")
@@ -311,9 +315,21 @@ if __name__=="__main__":
             input("Fin prématurée. Presser une touche.\n")
             sys.exit(1)
     with_note = 0
-    a = str(input("Avec notes ? (0/1)"))
-    if a==str(1):
+
+    def oui():
+        global with_note
         with_note = 1
+        fen.destroy()
+    def non():
+        global with_note
+        with_note = 0
+        fen.destroy()
+    # creating window
+    fen = tk.Tk()
+    Label(fen, text = "Note ?").pack()
+    Button(fen, text = "Oui", command =oui).pack()
+    Button(fen, text = "Non", command =non).pack()
+
     if with_solution==1:
         sols = os.listdir("./solutions/")
         for file in sols:
