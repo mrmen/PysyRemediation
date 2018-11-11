@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/local/bin/python3.7
 # -*- coding:utf-8 -*-
 
 ##docx##from docx import Document
@@ -18,7 +18,7 @@ class Remediation():
     notion       : nombre de notions
     Il faudra compiler le fichier avec LaTeX pour obtenir un PDF.
     '''
-    def __init__(self, filename = "fichier.csv", competence="comp.csv", output = "output.tex",with_solution=0, with_note):
+    def __init__(self, filename = "fichier.csv", competence="comp.csv", output = "output.tex",with_solution = 0, with_note = 0):
         '''__init__
         Initialisation et génération du fichier de sortie.
         '''
@@ -36,7 +36,12 @@ class Remediation():
         # Chargement des élèves dans la liste
         self.get_students()
         # Changement des exercices dans la liste
-        self.get_exercises()
+        if "ex" in os.listdir("."):
+            self.get_exercises()
+            self.with_remediation = 1
+        else:
+            self.with_remediation = 0
+        print(self.with_remediation)
         # Géneration du fichier TeX
 ##docx##        self.generateDocx()
         self.generateTex()
@@ -52,12 +57,12 @@ class Remediation():
             #TESTING
             temp = line
             temp = temp.replace("\n","").replace("	",";").replace("\"","").replace("\r","")
-            temp = temp.replace("Évaluation : Maîtrise insuffisante","0")
-            temp = temp.replace("Évaluation : Maîtrise fragile","1")
-            temp = temp.replace("Évaluation : Maîtrise satisfaisante","2")
-            temp = temp.replace("Évaluation : Très bonne maîtrise ","3")
-            temp = temp.replace("Évaluation : Absent","a")
-            temp = temp.replace("Évaluation : Non évalué ","n")
+            temp = temp.replace("Maîtrise insuffisante","0")
+            temp = temp.replace("Maîtrise fragile","1")
+            temp = temp.replace("Maîtrise satisfaisante","2")
+            temp = temp.replace("Très bonne maîtrise","3")
+            temp = temp.replace("Absent","a")
+            temp = temp.replace("Non évalué ","n")
             if "X;X" in temp:
                 continue
             if "Élève" in temp:
@@ -114,50 +119,7 @@ class Remediation():
             name = _.split("-")
             #self.Exercises[int(name[1])-1].append(_)
 #             if "notion" in name:
-#                 self.Exercises[int(name[1])-1].append(_)
-    
-    def generateDocx(self):
-        document = Document()
-        for index in range(len(self.Students)):
-            for i in range(self.notions):
-                table = document.add_table(rows=1, cols=5)
-                table.style = 'TableGrid'
-                hdr_cells = table.rows[0].cells
-                for _ in range(len(self.Observables)):
-                    hdr_cells[_+1].text = self.Observables[i][_]
-                row = table.add_row().cells
-                row[0].text = self.Competences[i]
-                p= row[int(self.content[index][i+1])+1].add_paragraph("x")
-                p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-                for c in range(5):
-                    table.columns[c].width=Cm(4)
-                
-
-            p = document.add_paragraph()
-            p.add_run('Remédiation pour %s'%self.Students[index]).bold=True
-
-            minipage = 0
-            index = 0
-            for notion in range(len(self.exerciseNames)):# répétition sur les notions
-                if minipage==0:
-                    table = document.add_table(rows=1,cols=2)
-                p = table.rows[0].cells[index].add_paragraph()
-                r = p.add_run()
-                lvl = int(self.content[index][notion+1])+1# niveau d'exercice pour la
-                r.add_picture('./ex/'+self.exerciseNames[notion]+"-"+str(lvl)+".png", width=Cm(8))
-                index = (index+1)%2
-                minipage = (minipage+1)%2
-                
-            document.add_page_break()
-        #changing the page margins
-            sections = document.sections
-            for section in sections:
-                section.top_margin = Cm(1.5)
-                section.bottom_margin = Cm(1.5)
-                section.left_margin = Cm(1)
-                section.right_margin = Cm(1)
-        document.save("output.docx")
-
+#                 self.Exercises[int(name[1])-1].append(_)   
 
     def generateTex(self):
         '''generateTex
@@ -194,62 +156,71 @@ class Remediation():
 \\fancyhead[R]{}
 \\pagestyle{fancy} 
 \\begin{document}'''
-        for index in range(len(self.Students)):# répétition sur le nombre
+        for self.index in range(len(self.Students)):# répétition sur le nombre
                                         # d'élèves
-                                        # utilisation de index
+                                        # utilisation de self.index
 ###
             positionnement = ["\\cellcolor{red!25}\\checkmark & & &","& \\cellcolor{yellow!25}\\checkmark & &", "& & \\cellcolor{green!25}\\checkmark &", "& & & \\cellcolor{DarkGreen!25}\\checkmark"]
-            endofminipage = 0
+            self.endofminipage = 0
             # valeur maximale que peut avoir l'eleve : 4 points par comp
-            maxnote = 0
+            self.maxnote = 0
             # note de l'eleve
-            note = 0
+            self.note = 0
             for i in range(self.notions):
                 string += "\\begin{center}\n\\begin{tabular}{|p{3cm}|*{4}{>{\\footnotesize}p{3cm}<{}|}}\n\\hline\n"
                 string += "& "+ "&".join(self.Observables[i]) + "\\\\"
                 string += "\\hline\n"
-                if self.content[index][i+1] in ["0","1","2","3"]:
-            #### debug
-                    if index == 0:
-                        print(self.content[index])
-                        print(self.notions)
-            #### debug
-                    string += self.Competences[i] + " & " + positionnement[int(self.content[index][i+1])] + "\\\\"
+                if self.content[self.index][i+1] in ["0","1","2","3"]:
+                    string += self.Competences[i] + " & " + positionnement[int(self.content[self.index][i+1])] + "\\\\"
                     # dans ce cas l'eleve est evalue
                     ## on prend le positionnement et on ajoute 1 (evite la note nulle)
-                    if self.content[index][i+1] == 0:
-                        note += 0.5
+                    if self.content[self.index][i+1] == 0:
+                        self.note += 0.5
                     else:
-                        note += int(self.content[index][i+1])+1
+                        self.note += int(self.content[self.index][i+1])+1
                     ## on ajoute 4 a la note max
-                    maxnote += 4
-                elif self.content[index][i+1] == "a":
+                    self.maxnote += 4
+                elif self.content[self.index][i+1] == "a":
                     string += self.Competences[i] + " & " + " Ab. & Ab. & Ab. & Ab." + "\\\\"
-                elif self.content[index][i+1] == "n":
+                elif self.content[self.index][i+1] == "n":
                     string += self.Competences[i] + " & " + " N.E. & N.E. & N.E. & N.E." + "\\\\"
                 string += "\\hline\n"
                 string += "\\end{tabular}\\end{center}\n"
-###
+                ###
             # calcul de la note
             ## on verifie que la note max n'est pas nul
-            if maxnote == 0:
-                note = "non noté"
+            if self.maxnote == 0:
+                self.note = "non noté"
             else:
-                note = str(int(round(note/maxnote*20,0)))+"/20"
-            if self.with_note == 1:
-                string += "\\subsection*{Remédiation pour "+self.Students[index]+" ("+note+")}\n"#
+                self.note = str(int(round(self.note/self.maxnote*20.0)))+"/20"
+
+            if self.with_remediation == 0:
+                string += "\\subsection*{"+self.Students[self.index]+"}\n"
+                string += "\n\n\\bigskip\n\n"
             else:
-                string += "\\subsection*{Remédiation pour "+self.Students[index]+"}\n"#
-                                        #Titre avec le nom de l'élève
+                if self.with_note == 1:
+                    string += "\\subsection*{Remédiation pour "+self.Students[self.index]+" ("+note+")}\n\\newpage"#
+                else:
+                    string += "\\subsection*{Remédiation pour "+self.Students[self.index]+"}\n\\newpage"#
+                string += self.do_my_remediation()
+
+        string += "\\end{document}"# fin du document
+
+        file = codecs.open(self.output_file, "w","utf-8")# ouverture du fichier sortie
+        file.write(string)# écriture de string dans le fichier de sortie
+        file.close()# fermeture du fichier de sortie
+
+    def do_my_remediation(self):
+            string = ""
             minipage = 0# variable pour la manipulation des deux colonnes
             for notion in range(len(self.exerciseNames)):# répétition sur les notions
                                         # utilisation de notion
-                if self.content[index][notion+1] in ["0","1","2","3"]:
-                    lvl = int(self.content[index][notion+1])+1# niveau d'exercice pour la
+                if self.content[self.index][notion+1] in ["0","1","2","3"]:
+                    lvl = int(self.content[self.index][notion+1])+1# niveau d'exercice pour la
                                         # notion et l'élève
                 else:
                     lvl = 1
-                string += "\\begin{minipage}{0.5\linewidth}\centering\\includegraphics[width=7cm]{"+'./ex/'+self.exerciseNames[notion]+"-"+str(lvl)+".png}\\end{minipage}"#\\\\"
+                string += "\\begin{minipage}{0.5\linewidth}\centering\\includegraphics[width=8cm]{"+'./ex/'+self.exerciseNames[notion]+"-"+str(lvl)+".png}\\end{minipage}"#\\\\"
                 string += "\n"
                 minipage += 1
                 if (minipage%2 == 0):# si deux minipage face à face
@@ -259,8 +230,8 @@ class Remediation():
                 string += "\\vfill\n\n"
                 for notion in range(len(self.exerciseNames)):# répétition sur les notions
                     bbox = ""
-                    if self.content[index][i+1] in [0,1,2,3]:
-                        lvl = int(self.content[index][notion+1])+1# niveau d'exercice pour la
+                    if self.content[self.index][i+1] in [0,1,2,3]:
+                        lvl = int(self.content[self.index][notion+1])+1# niveau d'exercice pour la
                     else:
                         lvl = 1
                     if self.with_solution==1:
@@ -275,12 +246,7 @@ class Remediation():
                     if (minipage%2==0):
                             string += "\n\n"
             string += "\n\n\\newpage\n\n"# nouvelle page pour changement d'élève
-        string += "\\end{document}"# fin du document
-
-        file = codecs.open(self.output_file, "w","utf-8")# ouverture du fichier sortie
-        file.write(string)# écriture de string dans le fichier de sortie
-        file.close()# fermeture du fichier de sortie
-
+            return string
 
     # def generateDocx(self):
     #     '''generateDocx
@@ -353,6 +319,6 @@ if __name__=="__main__":
         for file in sols:
             if "png" in file:
                 with_solution=2
-    converter = Remediation("eleves.csv", "comp.csv","remediation.tex",with_solution, with_note)
+    converter = Remediation("eleves.csv", "comp.csv","remediation.tex", with_solution, with_note)
     
 #        app = Fenetre()
