@@ -9,9 +9,9 @@
 
 import os, sys, codecs
 if sys.version_info[0] < 3:
-    import tkinter as tk
-else:
     import Tkinter as tk
+else:
+    import tkinter as tk
 
 class Remediation():
     '''Classe qui permet de produire le fichier de remédiation.
@@ -45,7 +45,6 @@ class Remediation():
             self.with_remediation = 1
         else:
             self.with_remediation = 0
-        print(self.with_remediation)
         # Géneration du fichier TeX
 ##docx##        self.generateDocx()
         self.generateTex()
@@ -170,12 +169,13 @@ class Remediation():
             self.maxnote = 0
             # note de l'eleve
             self.note = 0
+            string_temp = ""
             for i in range(self.notions):
-                string += "\\begin{center}\n\\begin{tabular}{|p{3cm}|*{4}{>{\\footnotesize}p{3cm}<{}|}}\n\\hline\n"
-                string += "& "+ "&".join(self.Observables[i]) + "\\\\"
-                string += "\\hline\n"
+                string_temp += "\\begin{center}\n\\begin{tabular}{|p{3cm}|*{4}{>{\\footnotesize}p{3cm}<{}|}}\n\\hline\n"
+                string_temp += "& "+ "&".join(self.Observables[i]) + "\\\\"
+                string_temp += "\\hline\n"
                 if self.content[self.index][i+1] in ["0","1","2","3"]:
-                    string += self.Competences[i] + " & " + positionnement[int(self.content[self.index][i+1])] + "\\\\"
+                    string_temp += self.Competences[i] + " & " + positionnement[int(self.content[self.index][i+1])] + "\\\\"
                     # dans ce cas l'eleve est evalue
                     ## on prend le positionnement et on ajoute 1 (evite la note nulle)
                     if self.content[self.index][i+1] == 0:
@@ -185,11 +185,11 @@ class Remediation():
                     ## on ajoute 4 a la note max
                     self.maxnote += 4
                 elif self.content[self.index][i+1] == "a":
-                    string += self.Competences[i] + " & " + " Ab. & Ab. & Ab. & Ab." + "\\\\"
+                    string_temp += self.Competences[i] + " & " + " Ab. & Ab. & Ab. & Ab." + "\\\\"
                 elif self.content[self.index][i+1] == "n":
-                    string += self.Competences[i] + " & " + " N.E. & N.E. & N.E. & N.E." + "\\\\"
-                string += "\\hline\n"
-                string += "\\end{tabular}\\end{center}\n"
+                    string_temp += self.Competences[i] + " & " + " N.E. & N.E. & N.E. & N.E." + "\\\\"
+                string_temp += "\\hline\n"
+                string_temp += "\\end{tabular}\\end{center}\n\\bigskip\n"
                 ###
             # calcul de la note
             ## on verifie que la note max n'est pas nul
@@ -200,12 +200,14 @@ class Remediation():
 
             if self.with_remediation == 0:
                 string += "\\subsection*{"+self.Students[self.index]+"}\n"
+                string += string_temp
                 string += "\n\n\\bigskip\n\n"
             else:
                 if self.with_note == 1:
-                    string += "\\subsection*{Remédiation pour "+self.Students[self.index]+" ("+note+")}\n\\newpage"#
+                    string += "\\subsection*{"+self.Students[self.index]+" ("+note+")}\n"#
                 else:
-                    string += "\\subsection*{Remédiation pour "+self.Students[self.index]+"}\n\\newpage"#
+                    string += "\\subsection*{"+self.Students[self.index]+"}\n"#
+                string += string_temp + "\\newpage"
                 string += self.do_my_remediation()
 
         string += "\\end{document}"# fin du document
@@ -213,6 +215,12 @@ class Remediation():
         file = codecs.open(self.output_file, "w","utf-8")# ouverture du fichier sortie
         file.write(string)# écriture de string dans le fichier de sortie
         file.close()# fermeture du fichier de sortie
+        if os.name == "posix":
+            os.system("pdflatex remediation.tex")
+            os.system("open remediation.pdf")
+        elif os.name == "nt":
+            import subprocess
+            subprocess.check_call(["C:\\Program Files\\Miktex\\bin\\x64\\bin\\pdflatex.exe", "remediation.tex"])
 
     def do_my_remediation(self):
             string = ""
@@ -224,7 +232,7 @@ class Remediation():
                                         # notion et l'élève
                 else:
                     lvl = 1
-                string += "\\begin{minipage}{0.5\linewidth}\centering\\includegraphics[width=8cm]{"+'./ex/'+self.exerciseNames[notion]+"-"+str(lvl)+".png}\\end{minipage}"#\\\\"
+                string += "\\begin{minipage}{0.5\linewidth}\centering\\includegraphics[width=8cm]{"+'./ex/'+self.exerciseNames[notion]+"-"+str(lvl)+".png}\n\n\\underline{"+self.exerciseNames[notion]+"}\\end{minipage}"#\\\\"
                 string += "\n"
                 minipage += 1
                 if (minipage%2 == 0):# si deux minipage face à face
@@ -316,19 +324,23 @@ if __name__=="__main__":
             sys.exit(1)
     with_note = 0
 
-    def oui():
-        global with_note
-        with_note = 1
-        fen.destroy()
-    def non():
-        global with_note
+    if "-nn" in sys.argv:
         with_note = 0
-        fen.destroy()
-    # creating window
-    fen = tk.Tk()
-    Label(fen, text = "Note ?").pack()
-    Button(fen, text = "Oui", command =oui).pack()
-    Button(fen, text = "Non", command =non).pack()
+    else:
+        def oui():
+            global with_note
+            with_note = 1
+            fen.destroy()
+        def non():
+            global with_note
+            with_note = 0
+            fen.destroy()
+        # creating window
+        fen = tk.Tk()
+        tk.Label(fen, text = "Note ?").pack()
+        tk.Button(fen, text = "Oui", command =oui).pack()
+        tk.Button(fen, text = "Non", command =non).pack()
+        fen.mainloop()
 
     if with_solution==1:
         sols = os.listdir("./solutions/")
