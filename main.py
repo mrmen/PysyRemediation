@@ -219,8 +219,7 @@ class Remediation():
             os.system("pdflatex remediation.tex")
             os.system("open remediation.pdf")
         elif os.name == "nt":
-            import subprocess
-            subprocess.check_call(["C:\\Program Files\\Miktex\\bin\\x64\\bin\\pdflatex.exe", "remediation.tex"])
+            os.system("pdflatex.exe remediation.tex")
 
     def do_my_remediation(self):
             string = ""
