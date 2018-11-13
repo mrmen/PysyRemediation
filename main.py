@@ -1,12 +1,6 @@
 #!/usr/local/bin/python3.7
 # -*- coding:utf-8 -*-
 
-##docx##from docx import Document
-##docx##from docx.shared import Cm
-##docx##from docx.enum.table import WD_TABLE_ALIGNMENT
-##docx##from docx.enum.text import WD_ALIGN_PARAGRAPH
-
-
 import os, sys, codecs
 
 if sys.version_info[0] < 3:
