@@ -357,3 +357,4 @@ if __name__ == "__main__":
     converter = Remediation("eleves.csv", "comp.csv", "remediation.tex", with_solution, with_note)
 
 # app = Fenetre()
+#201811131244
