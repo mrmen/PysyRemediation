@@ -208,7 +208,7 @@ class Remediation():
                 string += "\n\n\\bigskip\n\n"
             else:
                 if self.with_note == 1:
-                    string += "\\subsection*{" + self.Students[self.index] + " (" + note + ")}\n"  #
+                    string += "\\subsection*{" + self.Students[self.index] + " (" + self.note + ")}\n"  #
                 else:
                     string += "\\subsection*{" + self.Students[self.index] + "}\n"  #
                 string += string_temp + "\\newpage"
