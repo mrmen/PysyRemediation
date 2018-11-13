@@ -8,7 +8,7 @@ import requests
 ### version checker
 myurl = "https://raw.githubusercontent.com/mrmen/PysyRemediation/master/"
 check_file = "check"
-main_file = "main.py"
+main_file = sys.argv[0]
 
 def internet_on():
    try:
@@ -399,3 +399,4 @@ if __name__ == "__main__":
 #201811131246
 #201811131505
 #201811131956
+#201811131959
