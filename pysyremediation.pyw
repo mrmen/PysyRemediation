@@ -2,50 +2,56 @@
 # -*- coding:utf-8 -*-
 
 import os, sys, codecs
-import requests
 
 
-### version checker
-myurl = "https://raw.githubusercontent.com/mrmen/PysyRemediation/master/"
-check_file = "check"
-main_file = sys.argv[0]
+try:
+    import requests
+    ### version checker
+    myurl = "https://raw.githubusercontent.com/mrmen/PysyRemediation/master/"
+    check_file = "check"
+    main_file = sys.argv[0].split("/")[-1]
 
-def internet_on():
-   try:
-       response = requests.get('https://www.google.com/')
-       return True
-   except: 
-       return False
+    def internet_on():
+        try:
+            response = requests.get('https://www.google.com/')
+            return True
+        except: 
+            return False
 
-if internet_on():
+    if internet_on():
     # checker
-    u = requests.get(myurl+check_file)
-    current=u.text.replace("\n","").replace("#","")
-    f = open(sys.argv[0],"r")
-    first = f.readline()     # Read the first line.
-    for last in f: pass   
-    f.close()
-    last = last.replace("\n","").replace("#","")
-    try:
-        last = int(last)
-        status = 1
-    except:
-        status = 0
-    if status:
-        if int(last)!=int(current):
-            print("New version available at "+myurl+main_file)
-            print("Do you want to continue with this version ? (o/N)")
-            if (input() in ["N","n",""] ):
-                sys.exit()
-    else:
-        print("cannot determine version... please check at "+myurl+main_file)
+        u = requests.get(myurl+check_file)
+        current=u.text.replace("\n","").replace("#","")
+        f = open(sys.argv[0],"r")
+        first = f.readline()     # Read the first line.
+        for last in f: pass   
+        f.close()
+        last = last.replace("\n","").replace("#","")
+        try:
+            last = int(last)
+            status = 1
+        except:
+            status = 0
+        if status:
+            if int(last)!=int(current):
+                print("New version available at "+myurl+main_file)
+                print("Do you want to continue with this version ? (o/N)")
+                if (input() in ["N","n",""] ):
+                    sys.exit()
+        else:
+            print("cannot determine version... please check at "+myurl+main_file)
 
 ### end version checker
 
-if sys.version_info[0] < 3:
-    import Tkinter as tk
-else:
-    import tkinter as tk
+except:
+    print("no requests module available")
+
+
+if sys.platform != "ios":
+    if sys.version_info[0] < 3:
+        import Tkinter as tk
+    else:
+        import tkinter as tk
 
 
 class Remediation():
@@ -400,3 +406,4 @@ if __name__ == "__main__":
 #201811131505
 #201811131956
 #201811131959
+#201811171302
