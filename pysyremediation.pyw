@@ -65,7 +65,7 @@ class Remediation():
     '''
 
     def __init__(self, filename="fichier.csv", competence="comp.csv", output="output.tex", with_solution=0,
-                 with_note=0):
+                 with_note=0, linepics=0):
         '''__init__
         Initialisation et génération du fichier de sortie.
         '''
@@ -75,6 +75,7 @@ class Remediation():
         self.competence = competence  # nom du fichier contenant les compétences
         self.with_solution = with_solution  # booléen pour l'ajout des solutions ou non
         self.with_note = with_note
+        self.linepics = linepics
 
         self.convert_csv_to_array()
 
@@ -108,7 +109,8 @@ class Remediation():
             temp = temp.replace("Maîtrise satisfaisante", "2")
             temp = temp.replace("Très bonne maîtrise", "3")
             temp = temp.replace("Absent", "a")
-            temp = temp.replace("Non évalué ", "n")
+            temp = temp.replace("Non évalué", "n")
+            temp = temp.replace("","n")
             if "X;X" in temp:
                 continue
             if "Élève" in temp:
@@ -234,6 +236,8 @@ class Remediation():
                 string_temp += "\\hline\n"
                 string_temp += "\\end{tabular}\\end{center}\n\\bigskip\n"
                 ###
+
+            string += "\\begin{minipage}{1.0\linewidth}"
             # calcul de la note
             ## on verifie que la note max n'est pas nul
             if self.maxnote == 0:
@@ -243,14 +247,14 @@ class Remediation():
 
             if self.with_remediation == 0:
                 string += "\\subsection*{" + self.Students[self.index] + "}\n"
-                string += string_temp
+                string += string_temp + "\\end{minipage}"
                 string += "\n\n\\bigskip\n\n"
             else:
                 if self.with_note == 1:
                     string += "\\subsection*{" + self.Students[self.index] + " (" + self.note + ")}\n"  #
                 else:
                     string += "\\subsection*{" + self.Students[self.index] + "}\n"  #
-                string += string_temp + "\\newpage"
+                string += string_temp + "\\end{minipage}" + "\\newpage"
                 string += self.do_my_remediation()
 
         string += "\\end{document}"  # fin du document
@@ -275,7 +279,11 @@ class Remediation():
             else:
                 lvl = 1
             if self.exerciseNames[notion] + "-" + str(lvl) + ".png" in os.listdir("./ex/"):
-                string += "\\begin{minipage}{0.5\\linewidth}\\centering\\includegraphics[width=8cm]{" + './ex/' + \
+                if self.linepics:
+                    string += "\\begin{minipage}{0.9\\linewidth}\\centering\\includegraphics[width=0.9\\linewidth]{" + './ex/' + \
+                      self.exerciseNames[notion] + "-" + str(lvl) + ".png}\n\n\\underline{" + self.exerciseNames[notion] + "}\\end{minipage}\n\n"  # \\\\"
+                else:
+                    string += "\\begin{minipage}{0.5\\linewidth}\\centering\\includegraphics[width=8cm]{" + './ex/' + \
                       self.exerciseNames[notion] + "-" + str(lvl) + ".png}\n\n\\underline{" + self.exerciseNames[notion] + "}\\end{minipage}"  # \\\\"
             else:
                 string += "\\begin{minipage}{0.5\\linewidth}\\end{minipage}\n"
@@ -359,12 +367,15 @@ if __name__ == "__main__":
         2 : solutions dans des fichiers png
         '''
     with_solution = 0
+    linepics = 1
     if "-h" in sys.argv or "--help" in sys.argv:
         helpMe()
         sys.exit(0)
     if "-s" in sys.argv or "--solution" in sys.argv:
         file_expected.append("solutions")
         with_solution = 1
+    if "-L" in sys.argv or "--linepics" in sys.argv:
+        linepics = 1
     for file in file_expected:
         if not file in os.listdir("."):
             print("Le fichier %s est manquant. Merci de l'ajouter ou de modifier le script main.py.\n" % file)
@@ -399,11 +410,6 @@ if __name__ == "__main__":
         for file in sols:
             if "png" in file:
                 with_solution = 2
-    converter = Remediation("eleves.csv", "comp.csv", "remediation.tex", with_solution, with_note)
-
-# app = Fenetre()
-#201811131246
-#201811131505
-#201811131956
-#201811131959
+    converter = Remediation("eleves.csv", "comp.csv", "remediation.tex", with_solution, with_note, linepics)
 #201811171302
+#201811252106
