@@ -101,7 +101,6 @@ class Remediation():
         file = codecs.open(self.filename, "r", encoding="utf-8")  # ouverture du fichier
         self.content = []
         for line in file.readlines():  # pour chaque ligne du fichier
-            # TESTING
             temp = line
             temp = temp.replace("\n", "").replace("	", ";").replace("\"", "").replace("\r", "").replace("	", ";")
             temp = temp.replace("Maîtrise insuffisante", "0")
@@ -116,8 +115,7 @@ class Remediation():
             if "Élève" in temp:
                 continue
             #            self.content.append(line.replace("\n","").split(";"))# ajouter la ligne du fichier découper selon les ;
-            self.content.append(temp.split(";"))
-            # TESTING
+            self.content.append(["n" if i == "" else i for i in temp.split(";")])
         file.close()  # fermeture du fichier
 
     def get_competences(self):
@@ -413,3 +411,4 @@ if __name__ == "__main__":
     converter = Remediation("eleves.csv", "comp.csv", "remediation.tex", with_solution, with_note, linepics)
 #201811171302
 #201811252106
+#201811252213
