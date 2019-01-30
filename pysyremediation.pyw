@@ -4,47 +4,45 @@
 import os, sys, codecs
 
 
-try:
-    import requests
-    ### version checker
-    myurl = "https://raw.githubusercontent.com/mrmen/PysyRemediation/master/"
-    check_file = "check"
-    main_file = sys.argv[0].split("/")[-1]
-
-    def internet_on():
-        try:
-            response = requests.get('https://www.google.com/')
-            return True
-        except: 
-            return False
-
-    if internet_on():
-    # checker
-        u = requests.get(myurl+check_file)
-        current=u.text.replace("\n","").replace("#","")
-        f = open(sys.argv[0],"r")
-        first = f.readline()     # Read the first line.
-        for last in f: pass   
-        f.close()
-        last = last.replace("\n","").replace("#","")
-        try:
-            last = int(last)
-            status = 1
-        except:
-            status = 0
-        if status:
-            if int(last)!=int(current):
-                print("New version available at "+myurl+main_file)
-                print("Do you want to continue with this version ? (o/N)")
-                if (input() in ["N","n",""] ):
-                    sys.exit()
-        else:
-            print("cannot determine version... please check at "+myurl+main_file)
+# try:
+#     import requests
+#     ### version checker
+#     myurl = "https://raw.githubusercontent.com/mrmen/PysyRemediation/master/"
+#     check_file = "check"
+#     main_file = sys.argv[0].split("/")[-1]
+#     def internet_on():
+#         try:
+#             response = requests.get('https://www.google.com/')
+#             return True
+#         except: 
+#             return False
+#     if internet_on():
+#     # checker
+#         u = requests.get(myurl+check_file)
+#         current=u.text.replace("\n","").replace("#","")
+#         f = open(sys.argv[0],"r")
+#         first = f.readline()     # Read the first line.
+#         for last in f: pass   
+#         f.close()
+#         last = last.replace("\n","").replace("#","")
+#         try:
+#             last = int(last)
+#             status = 1
+#         except:
+#             status = 0
+#         if status:
+#             if int(last)!=int(current):
+#                 print("New version available at "+myurl+main_file)
+#                 print("Do you want to continue with this version ? (o/N)")
+#                 if (input() in ["N","n",""] ):
+#                     sys.exit()
+#         else:
+#             print("cannot determine version... please check at "+myurl+main_file)
 
 ### end version checker
 
-except:
-    print("no requests module available")
+# except:
+#     print("no requests module available")
 
 
 if sys.platform != "ios":
@@ -64,8 +62,8 @@ class Remediation():
     Il faudra compiler le fichier avec LaTeX pour obtenir un PDF.
     '''
 
-    def __init__(self, filename="fichier.csv", competence="comp.csv", output="output.tex", with_solution=0,
-                 with_note=0, linepics=0):
+    def __init__(self, filename, competence, output, with_solution,
+                 with_note, linepics):
         '''__init__
         Initialisation et génération du fichier de sortie.
         '''
@@ -109,7 +107,6 @@ class Remediation():
             temp = temp.replace("Très bonne maîtrise", "3")
             temp = temp.replace("Absent", "a")
             temp = temp.replace("Non évalué", "n")
-            temp = temp.replace("","n")
             if "X;X" in temp:
                 continue
             if "Élève" in temp:
@@ -117,6 +114,7 @@ class Remediation():
             #            self.content.append(line.replace("\n","").split(";"))# ajouter la ligne du fichier découper selon les ;
             self.content.append(["n" if i == "" else i for i in temp.split(";")])
         file.close()  # fermeture du fichier
+        print(self.content)
 
     def get_competences(self):
         '''get_competences
@@ -365,7 +363,7 @@ if __name__ == "__main__":
         2 : solutions dans des fichiers png
         '''
     with_solution = 0
-    linepics = 1
+    linepics = 0
     if "-h" in sys.argv or "--help" in sys.argv:
         helpMe()
         sys.exit(0)
@@ -412,3 +410,4 @@ if __name__ == "__main__":
 #201811171302
 #201811252106
 #201811252213
+#201901302318
