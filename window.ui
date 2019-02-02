@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>720</width>
+    <height>808</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="1" column="1">
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="9" column="0">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>Solutions</string>
+        </property>
+       </widget>
+      </item>
+      <item row="11" column="1">
+       <widget class="QDoubleSpinBox" name="spin_size"/>
+      </item>
+      <item row="1" column="1" colspan="2">
+       <widget class="QPushButton" name="button_directory">
+        <property name="text">
+         <string>Parcourir…</string>
+        </property>
+       </widget>
+      </item>
+      <item row="11" column="2">
+       <widget class="QLabel" name="label_7">
+        <property name="text">
+         <string>cm</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="1">
+       <widget class="QRadioButton" name="radio_eleves_auto">
+        <property name="text">
+         <string>Automatique</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">eleves_group</string>
+        </attribute>
+       </widget>
+      </item>
+      <item row="10" column="0">
+       <widget class="QLabel" name="label_5">
+        <property name="text">
+         <string>Exercices côte à côte</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="2">
+       <widget class="QRadioButton" name="radio_eleves_man">
+        <property name="text">
+         <string>Manuel</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">eleves_group</string>
+        </attribute>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>comp.csv</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>eleves.csv</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0" colspan="3">
+       <widget class="QPushButton" name="button_go">
+        <property name="text">
+         <string>Fais de la magie…</string>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="0">
+       <widget class="QTextEdit" name="text_eleves"/>
+      </item>
+      <item row="10" column="2">
+       <widget class="QRadioButton" name="radio_side_no">
+        <property name="text">
+         <string>Non</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">side_group</string>
+        </attribute>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QTextEdit" name="text_comp"/>
+      </item>
+      <item row="11" column="0">
+       <widget class="QLabel" name="label_6">
+        <property name="text">
+         <string>Taille exercice (horizontale)</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QRadioButton" name="radio_comp_auto">
+        <property name="text">
+         <string>Automatique</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">comp_group</string>
+        </attribute>
+       </widget>
+      </item>
+      <item row="9" column="1">
+       <widget class="QRadioButton" name="radio_solutions_yes">
+        <property name="text">
+         <string>Oui</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">solutions_group</string>
+        </attribute>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_directory">
+        <property name="text">
+         <string>Répertoire principal</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="2">
+       <widget class="QRadioButton" name="radio_comp_man">
+        <property name="text">
+         <string>Manuel</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">comp_group</string>
+        </attribute>
+       </widget>
+      </item>
+      <item row="2" column="0" colspan="3">
+       <widget class="QLineEdit" name="line_directory"/>
+      </item>
+      <item row="10" column="1">
+       <widget class="QRadioButton" name="radio_side_yes">
+        <property name="text">
+         <string>Oui</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">side_group</string>
+        </attribute>
+       </widget>
+      </item>
+      <item row="9" column="2">
+       <widget class="QRadioButton" name="radio_solutions_no">
+        <property name="text">
+         <string>Non</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">solutions_group</string>
+        </attribute>
+       </widget>
+      </item>
+      <item row="8" column="1">
+       <widget class="QRadioButton" name="radio_note_yes">
+        <property name="text">
+         <string>Oui</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">note_grop</string>
+        </attribute>
+       </widget>
+      </item>
+      <item row="8" column="2">
+       <widget class="QRadioButton" name="radio_note_no">
+        <property name="text">
+         <string>Non</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">note_grop</string>
+        </attribute>
+       </widget>
+      </item>
+      <item row="8" column="0">
+       <widget class="QLabel" name="label_4">
+        <property name="text">
+         <string>Notes</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>720</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFichier">
+    <property name="title">
+     <string>Fichier</string>
+    </property>
+    <addaction name="actionQuitter"/>
+   </widget>
+   <widget class="QMenu" name="menuAide">
+    <property name="title">
+     <string>Aide</string>
+    </property>
+    <addaction name="action_propos"/>
+   </widget>
+   <addaction name="menuFichier"/>
+   <addaction name="menuAide"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionQuitter">
+   <property name="text">
+    <string>Quitter</string>
+   </property>
+  </action>
+  <action name="action_propos">
+   <property name="text">
+    <string>À propos</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+ <buttongroups>
+  <buttongroup name="solutions_group"/>
+  <buttongroup name="side_group"/>
+  <buttongroup name="eleves_group"/>
+  <buttongroup name="note_grop"/>
+  <buttongroup name="comp_group"/>
+ </buttongroups>
+</ui>

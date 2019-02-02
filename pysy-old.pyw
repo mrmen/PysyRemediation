@@ -411,8 +411,4 @@ if __name__ == "__main__":
             if "png" in file:
                 with_solution = 2
     converter = Remediation("eleves.csv", "comp.csv", "remediation.tex", with_solution, with_note, linepics)
-#201811171302
-#201811252106
-#201811252213
-#201901302318
 #201901302319
