@@ -3,58 +3,9 @@
 
 #This work is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 #International License. To view a copy of this license, visit http://creativecommons.org/#licenses/by-nc-sa/4.0/ or send a letter to Creative Commons, PO Box 1866, Mountain View, CA #94042, USA.
 
-# Copyright 2017-2018 Thomas Etcheverria <tetcheve@gmail.com>
+# Copyright 2017-2019 Thomas Etcheverria <tetcheve@gmail.com>
 
 import os, sys, codecs
-
-
-# try:
-#     import requests
-#     ### version checker
-#     myurl = "https://raw.githubusercontent.com/mrmen/PysyRemediation/master/"
-#     check_file = "check"
-#     main_file = sys.argv[0].split("/")[-1]
-#     def internet_on():
-#         try:
-#             response = requests.get('https://www.google.com/')
-#             return True
-#         except: 
-#             return False
-#     if internet_on():
-#     # checker
-#         u = requests.get(myurl+check_file)
-#         current=u.text.replace("\n","").replace("#","")
-#         f = open(sys.argv[0],"r")
-#         first = f.readline()     # Read the first line.
-#         for last in f: pass   
-#         f.close()
-#         last = last.replace("\n","").replace("#","")
-#         try:
-#             last = int(last)
-#             status = 1
-#         except:
-#             status = 0
-#         if status:
-#             if int(last)!=int(current):
-#                 print("New version available at "+myurl+main_file)
-#                 print("Do you want to continue with this version ? (o/N)")
-#                 if (input() in ["N","n",""] ):
-#                     sys.exit()
-#         else:
-#             print("cannot determine version... please check at "+myurl+main_file)
-
-### end version checker
-
-# except:
-#     print("no requests module available")
-
-
-if sys.platform != "ios":
-    if sys.version_info[0] < 3:
-        import Tkinter as tk
-    else:
-        import tkinter as tk
-
 
 class Remediation():
     '''Classe qui permet de produire le fichier de remédiation.
@@ -93,7 +44,6 @@ class Remediation():
         else:
             self.with_remediation = 0
             # Géneration du fichier TeX
-        ##docx##        self.generateDocx()
         self.generateTex()
 
     def convert_csv_to_array(self):
@@ -116,7 +66,6 @@ class Remediation():
                 continue
             if "Élève" in temp:
                 continue
-            #            self.content.append(line.replace("\n","").split(";"))# ajouter la ligne du fichier découper selon les ;
             self.content.append(["n" if i == "" else i for i in temp.split(";")])
         file.close()  # fermeture du fichier
         print(self.content)
@@ -164,9 +113,6 @@ class Remediation():
         self.Exercises = [[] for _ in range(self.notions)]
         for _ in os.listdir("./ex"):
             name = _.split("-")
-            # self.Exercises[int(name[1])-1].append(_)
-        #             if "notion" in name:
-        #                 self.Exercises[int(name[1])-1].append(_)
 
     def generateTex(self):
         '''generateTex
@@ -315,101 +261,3 @@ class Remediation():
                     string += "\n\n"
         string += "\n\n\\newpage\n\n"  # nouvelle page pour changement d'élève
         return string
-
-        # def generateDocx(self):
-        #     '''generateDocx
-        #     À revoir : devrait permettre de créer des fichiers docx
-        #     '''
-        #     document = Document()
-        #     for index in range(len(self.Students)):
-        #         document.add_heading('Remediation pour ',0)#+self.Students[index], 0)
-        #         document.add_paragraph()
-        #         for notion in range(len(self.Exercises)):
-        #             document.add_heading('Notion '+str(notion+1), level=1)
-        #             lvl = self.content[index][notion+1]
-        #             document.add_picture('./ex/notion-'+str(notion+1)+"-"+str(lvl)+".gif")
-        #         document.add_page_break()
-
-        #     document.save('demo.docx')
-
-
-def helpMe():
-    print('''
-    Ce script attend la présence de deux fichiers :
-    - eleves.csv
-        contient les noms des élèves, puis les positionnement sur les compétences évaluées
-        le positionnement est compris entre 0 et 3
-        les différents champ sont séparés par des «;»
-        exemple :
-        nom1;0;1;2;0
-        nom2;3;3;3;3
-    - comp.csv
-        contient le noms des compétences évaluées ainsi que les observables utilisés pour
-        l'évaluation
-        le nom des compétences doit être le même que celui des exercices de dossier «ex»
-        avec les accents en plus
-    
-    et d'un dossier
-    - ex
-        contient l'ensemble des exercices au format png
-        les noms des exercices sont du types
-            competence1-1.png
-            ...
-            competence1-4.png
-        pour les 4 niveaux de maitrise
-    ''')
-
-
-if __name__ == "__main__":
-    file_expected = ["eleves.csv", "comp.csv"]
-    '''with_solution : variable sur la présence de solutions
-        0 : pas de solution
-        1 : solutions dans des fichiers texte
-        2 : solutions dans des fichiers png
-        '''
-    with_solution = 0
-    linepics = 0
-    if "-h" in sys.argv or "--help" in sys.argv:
-        helpMe()
-        sys.exit(0)
-    if "-s" in sys.argv or "--solution" in sys.argv:
-        file_expected.append("solutions")
-        with_solution = 1
-    if "-L" in sys.argv or "--linepics" in sys.argv:
-        linepics = 1
-    for file in file_expected:
-        if not file in os.listdir("."):
-            print("Le fichier %s est manquant. Merci de l'ajouter ou de modifier le script main.py.\n" % file)
-            input("Fin prématurée. Presser une touche.\n")
-            sys.exit(1)
-    with_note = 0
-
-    if "-nn" in sys.argv:
-        with_note = 0
-    else:
-        def oui():
-            global with_note
-            with_note = 1
-            fen.destroy()
-
-
-        def non():
-            global with_note
-            with_note = 0
-            fen.destroy()
-
-
-        # creating window
-        fen = tk.Tk()
-        tk.Label(fen, text="Note ?").pack()
-        tk.Button(fen, text="Oui", command=oui).pack()
-        tk.Button(fen, text="Non", command=non).pack()
-        fen.mainloop()
-
-    if with_solution == 1:
-        sols = os.listdir("./solutions/")
-        for file in sols:
-            if "png" in file:
-                with_solution = 2
-    converter = Remediation("eleves.csv", "comp.csv", "remediation.tex", with_solution, with_note, linepics, "9")
-#201901302319
