@@ -24,7 +24,8 @@ class Remediation():
         '''
         # Préparation des variables
         self.filename = filename  # nom du fichier avec les noms des élèves
-        self.output_file = output  # nom du fichier de sortie
+        self.output_file = output.split('/')[-1] # nom du fichier de sortie
+        self.path = "/".join(output.split("/")[:-1])
         self.competence = competence  # nom du fichier contenant les compétences
         self.with_solution = with_solution  # booléen pour l'ajout des solutions ou non
         self.with_note = with_note
@@ -210,9 +211,11 @@ class Remediation():
         file.write(string)  # écriture de string dans le fichier de sortie
         file.close()  # fermeture du fichier de sortie
         if os.name == "posix":
+            os.system("cd "+self.path)
             os.system("pdflatex remediation.tex")
             os.system("open remediation.pdf")
         elif os.name == "nt":
+            os.system("cd "+self.path)
             os.system("pdflatex.exe remediation.tex")
 
     def do_my_remediation(self):
