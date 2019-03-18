@@ -46,7 +46,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.side = self.ui.radio_side_yes.isChecked()
         self.solutions = 0
         self.note = self.ui.radio_note_yes.isChecked()
-        converter = pysybeta.Remediation("eleves.csv", "comp.csv", "remediation.tex", self.solutions, self.note, self.side, self.size)
+        converter = pysybeta.Remediation(self.path+"/eleves.csv", self.path+"/comp.csv", self.path+"/remediation.tex", self.solutions, self.note, self.side, self.size)
         
     def get_comp(self):
         if self.ui.radio_comp_auto.isChecked():
@@ -59,7 +59,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             if os.path.isfile(self.path+"/comp.csv"):
                 1
             else:
-                f = codecs.open("comp.csv", "w", "utf-8")
+                f = codecs.open(self.path+"/comp.csv", "w", "utf-8")
                 f.write(content.toPlainText())
                 f.close()
         return 0
@@ -74,7 +74,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             if os.path.isfile(self.path+"/eleves.csv"):
                 1
             else:
-                f = codecs.open("eleves.csv", "w", "utf-8")
+                f = codecs.open(self.path+"/eleves.csv", "w", "utf-8")
                 f.write(content.toPlainText())
                 f.close()
         return 0
