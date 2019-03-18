@@ -207,16 +207,14 @@ class Remediation():
 
         string += "\\end{document}"  # fin du document
 
-        file = codecs.open(self.output_file, "w", "utf-8")  # ouverture du fichier sortie
+        file = codecs.open(self.path+"/"+self.output_file, "w", "utf-8")  # ouverture du fichier sortie
         file.write(string)  # écriture de string dans le fichier de sortie
         file.close()  # fermeture du fichier de sortie
         if os.name == "posix":
-            os.system("cd "+self.path)
-            os.system("pdflatex remediation.tex")
-            os.system("open remediation.pdf")
+            os.system("cd "+self.path+" && pdflatex remediation.tex && open remediation.pdf")
         elif os.name == "nt":
-            os.system("cd "+self.path)
-            os.system("pdflatex.exe remediation.tex")
+            os.system("pdflatex.exe "+sel.path+"/"+self.output_file)
+            os.system(" start "+self.path+"/"+self.output_file[-3]+"pdf")
 
     def do_my_remediation(self):
         string = ""
